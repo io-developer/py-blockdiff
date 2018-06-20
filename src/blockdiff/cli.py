@@ -9,9 +9,9 @@ class Cli:
     def __init__(self):
         args = self.parse_args()
 
-        self.input_map_filepath = args.input_map
+        self.input_map_filepath = args.input_map or args.map
         self.output_map_filename = '.blockmap'
-        self.output_map_filepath = args.output_map
+        self.output_map_filepath = args.output_map or args.map
 
         self.output = None
         self.setup_output(args, self.output_map_filename)
@@ -33,6 +33,7 @@ class Cli:
         p.add_argument('-d', '--destination', required=True, help='output directory or tar file (depends of mode)')
         p.add_argument('-m', '--mode', default='tar', help='Mode: file, tar (default is uncompressed tar)')
         p.add_argument('-bs', '--block-size', type=int, default=65536, help='block size in bytes (default is 64kB)')
+        p.add_argument('-bm', '--map', help='input and output map file (if not specified)')
         p.add_argument('--input-map', help='input map file')
         p.add_argument('--output-map', help='output map file')
         p.add_argument('--verbose', type=int, default=0, help='verbose output')
