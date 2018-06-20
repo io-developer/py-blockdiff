@@ -9,13 +9,12 @@ class BlockdiffCli:
     def __init__(self):
         args = self.parse_args()
 
-        mapname = '.blockmap'
         self.input_map_filepath = args.input_map
-        self.output_map_filename = mapname
+        self.output_map_filename = '.blockmap'
         self.output_map_filepath = args.output_map
 
         self.output = None
-        self.setup_output(args, mapname)
+        self.setup_output(args, self.output_map_filename)
 
         self.input = blockdiff.Input(filepath=args.input_file, blocksize=args.block_size)
         self.mapper = blockdiff.Mapper(self.input)
@@ -32,8 +31,8 @@ class BlockdiffCli:
         p = argparse.ArgumentParser()
         p.add_argument('-f', '--input-file', required=True, help='input file')
         p.add_argument('-d', '--destination', required=True, help='output directory or tar file (depends of mode)')
-        p.add_argument('-m', '--mode', default='files', help='Mode: file, tar')
-        p.add_argument('-bs', '--block-size', type=int, default=1048576, help='block size in bytes (default is 1M)')
+        p.add_argument('-m', '--mode', default='tar', help='Mode: file, tar (default is uncompressed tar)')
+        p.add_argument('-bs', '--block-size', type=int, default=65536, help='block size in bytes (default is 64kB)')
         p.add_argument('--input-map', help='input map file')
         p.add_argument('--output-map', help='output map file')
         p.add_argument('--verbose', type=int, default=0, help='verbose output')
@@ -44,9 +43,9 @@ class BlockdiffCli:
             output_dir = args.destination.rstrip('/')
             self.input_map_filepath = args.input_map_filepath or f'{output_dir}/{mapname}'
             self.output_map_filepath = args.output_map_filepath or f'{output_dir}/{mapname}'
-            self.output = blockdiff.FileOutput(outdir=output_dir, filenamer=lambda index: f'part_{index:06}.block')
+            self.output = blockdiff.FileOutput(outdir=output_dir, filenamer=lambda index: f'{index:010}.block')
         elif args.mode == 'tar':
-            self.output = blockdiff.TarOutput(args.destination, filenamer=lambda index: f'part_{index:06}.block')
+            self.output = blockdiff.TarOutput(args.destination, filenamer=lambda index: f'{index:010}.block')
         else:
             raise ValueError(f'Unsupported mode "{args.mode}"')
 
