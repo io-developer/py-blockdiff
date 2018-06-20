@@ -1,0 +1,5 @@
+#! /usr/bin/python3
+import blockdiff.cli
+
+if __name__ == '__main__':
+    blockdiff.cli.run()
