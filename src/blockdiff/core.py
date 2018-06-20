@@ -11,7 +11,6 @@ class Input:
         self.blocksize = blocksize
         self.bytes_total = os.stat(self.filepath).st_size
         self.bytes_read = 0
-        pass
 
     def get_progress(self):
         return self.bytes_read / max(1, self.bytes_total)

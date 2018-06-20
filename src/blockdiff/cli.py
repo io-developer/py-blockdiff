@@ -2,10 +2,10 @@ import argparse
 import hashlib
 import sys
 import time
-import blockdiff
+import blockdiff.core as core
 
 
-class BlockdiffCli:
+class Cli:
     def __init__(self):
         args = self.parse_args()
 
@@ -16,9 +16,9 @@ class BlockdiffCli:
         self.output = None
         self.setup_output(args, self.output_map_filename)
 
-        self.input = blockdiff.Input(filepath=args.input_file, blocksize=args.block_size)
-        self.mapper = blockdiff.Mapper(self.input)
-        self.processor = blockdiff.Processor(
+        self.input = core.Input(filepath=args.input_file, blocksize=args.block_size)
+        self.mapper = core.Mapper(self.input)
+        self.processor = core.Processor(
             reader=self.input,
             mapper=self.mapper,
             hasher=lambda block: hashlib.sha1(block).hexdigest(),
@@ -43,9 +43,9 @@ class BlockdiffCli:
             output_dir = args.destination.rstrip('/')
             self.input_map_filepath = args.input_map_filepath or f'{output_dir}/{mapname}'
             self.output_map_filepath = args.output_map_filepath or f'{output_dir}/{mapname}'
-            self.output = blockdiff.FileOutput(outdir=output_dir, filenamer=lambda index: f'{index:010}.block')
+            self.output = core.FileOutput(outdir=output_dir, filenamer=lambda index: f'{index:010}.block')
         elif args.mode == 'tar':
-            self.output = blockdiff.TarOutput(args.destination, filenamer=lambda index: f'{index:010}.block')
+            self.output = core.TarOutput(args.destination, filenamer=lambda index: f'{index:010}.block')
         else:
             raise ValueError(f'Unsupported mode "{args.mode}"')
 
@@ -78,9 +78,9 @@ class BlockdiffCli:
         print(f'{perc:>8.1f}% {mbps:>8} MB/s')
 
 
-def main():
-    BlockdiffCli().exec()
+def run():
+    Cli().exec()
 
 
 if __name__ == '__main__':
-    main()
+    run()
